@@ -17,7 +17,7 @@
     // Just return a value to define the module export.
     // This example returns an object, but the module
     // can return a function as the exported value.
-    return function searchDocumentsByTags({documents = [], tags = [], max = Infinity, sort = true})  {
+    return function searchDocumentsByTags({documents = [], tags = [], ignoredTags = [], max = Infinity, sort = true})  {
       function sortDocumentsByTagsLength({object1, object2, tags}) {
           var object1TotalTags = 0;
           var object2TotalTags = 0;
@@ -33,11 +33,19 @@
           return 0;
       }
 
-      function filterDocumentsByTags({object, index, max, tags}) {
+      function filterDocumentsByTags({object, index, max, tags, ignoredTags}) {
         var i;
         for(i = 0; i < tags.length; i++) {
-          if (object.tags.includes(tags[i]))
+          if (ignoredTags.length !== 0) {
+            for (var j = 0; j < ignoredTags.length; j++) {
+              if (object.tags.includes(tags[i]) && object.tags.includes(ignoredTags[j]))
+                return;
+            }
             return object && index < max;
+          } else {
+            if (object.tags.includes(tags[i]))
+              return object && index < max;
+          }
         }
       }
 
@@ -58,7 +66,8 @@
           object:documents,
           index:index,
           max:max,
-          tags:tags
+          tags:tags,
+          ignoredTags:ignoredTags
         })
       })
 
@@ -71,6 +80,8 @@
           })
         })
       }
+
+      console.log(typeof filteredDocuments);
 
       return filteredDocuments;
     }
