@@ -1,0 +1,22 @@
+{
+  "name": "tag-sorter",
+  "version": "1.0.0",
+  "description": "Sort documents by their tags",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anonymous675/tag-sorter%1B%5BD%1B%5BC.git"
+  },
+  "keywords": [
+    "sort"
+  ],
+  "author": "NonStopGreen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/anonymous675/tag-sorter%1B%5BD%1B%5BC/issues"
+  },
+  "homepage": "https://github.com/anonymous675/tag-sorter%1B%5BD%1B%5BC#readme"
+}
