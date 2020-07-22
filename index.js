@@ -13,10 +13,7 @@
         root.returnExports = factory();
   }
 }(typeof self !== 'undefined' ? self : this, function() {
-
-    // Just return a value to define the module export.
-    // This example returns an object, but the module
-    // can return a function as the exported value.
+    'use strict';
     return function searchDocumentsByTags({documents = [], tags = [], ignoredTags = [], max = Infinity, sort = true})  {
       function sortDocumentsByTagsLength({object1, object2, tags}) {
           var object1TotalTags = 0;
@@ -33,20 +30,46 @@
           return 0;
       }
 
-      function filterDocumentsByTags({object, index, max, tags, ignoredTags}) {
+      function filterOutDocumentsByIgnoredTags({object, index, max, ignoredTags}) {
         var i;
-        for(i = 0; i < tags.length; i++) {
-          if (ignoredTags.length !== 0) {
-            for (var j = 0; j < ignoredTags.length; j++) {
-              if (object.tags.includes(tags[i]) && object.tags.includes(ignoredTags[j]))
-                return;
-            }
-            return object && index < max;
-          } else {
-            if (object.tags.includes(tags[i]))
-              return object && index < max;
-          }
+        for (i = 0; i < ignoredTags.length; i++) {
+          if (object.tags.includes(ignoredTags[i]))
+            return true;
         }
+        return false;
+      }
+
+      function filterDocumentsByFollowedTags({object, index, max, tags}) {
+        var i;
+        for (i = 0; i < tags.length; i++) {
+          if (object.tags.includes(tags[i]))
+            return true;
+        }
+        return false;
+      }
+
+      function filterDocumentsByTags({object, index, max, tags, ignoredTags}) {
+        var found = false, targetMap = {}, i, j, cur;
+
+        // Check for ignored tags in object.tags
+        found = filterOutDocumentsByIgnoredTags({
+          object:object,
+          index:index,
+          max:max,
+          ignoredTags:ignoredTags
+        });
+
+        if (found) return;
+
+        // Check for followed tags in object.tags
+        found = filterDocumentsByFollowedTags({
+          object:object,
+          index:index,
+          max:max,
+          tags:tags
+        });
+
+        if (found) return object && index < max;
       }
 
       if (!Array.isArray(documents) || documents.length == 0 || !documents.every(d => (typeof d === "object")))
@@ -61,7 +84,7 @@
       if (sort !== true && sort !== false)
         throw new TypeError("Parameter sort is not a boolean");
 
-      var filteredDocuments = documents.filter(function(documents, index) {
+      var filteredDocuments = documents.filter((documents, index) => {
         return filterDocumentsByTags({
           object:documents,
           index:index,
@@ -72,7 +95,7 @@
       })
 
       if (sort) {
-        filteredDocuments = filteredDocuments.sort(function(object1, object2) {
+        filteredDocuments = filteredDocuments.sort((object1, object2) => {
           return sortDocumentsByTagsLength({
             object1:object1,
             object2:object2,
@@ -80,8 +103,6 @@
           })
         })
       }
-
-      console.log(typeof filteredDocuments);
 
       return filteredDocuments;
     }
