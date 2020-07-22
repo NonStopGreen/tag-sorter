@@ -1,6 +1,6 @@
 # tag-sorter
 
-Tag sorter is a small library (88 lines of code) for searching documents by tags.
+Tag sorter is a small library (109 lines of code) for searching documents by tags.
 
 ## Features
 Tag sorter can:
