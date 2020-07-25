@@ -12,38 +12,70 @@ Tag sorter can:
 ## Examples
 
 ```Javascript
-var tagSorter = require("tag-sorter");
-
+// Data taken from stackoverflow.com
 var documents = [
   {
-    title:"Full guide to HTML5, CSS3 and Javascript",
-    tags:["html", "css", "js"]
+    title: "How can I remove a specific item from an array?",
+    tags: ["javascript", "arrays"]
   }, {
-    title:"Full guide to HTML5 and CSS3",
-    tags:["html", "css"]
+    title: 'How do I check if an element is hidden in jQuery?',
+    tags: ['javascript', 'jquery', 'dom', "visibility"]
   }, {
-    title:"Full guide to HTML5 new tags",
-    tags:["html"]
+    title: 'How do I redirect to another webpage?',
+    tags: ['javascript', 'jquery', 'redirect']
+  }, {
+    title: 'How do JavaScript closures work?',
+    tags: ['javascript', 'function', 'variables', 'scope', 'closures']
+  }, {
+    title: 'What does “use strict” do in JavaScript, and what is the reasoning behind it?',
+    tags: ['javascript', "syntax", "jslint", "use-strict"]
+  }, {
+    title: 'How to check whether a string contains a substring in JavaScript?',
+    tags: ["javascript", "string", "substring", "string-matching"]
+  }, {
+    title: "var functionName = function() {} vs function functionName() {}",
+    tags: ['javascript', 'function', "syntax", "idioms"]
+  }, {
+    title: 'How do I remove a property from a JavaScript object?',
+    tags: ["javascript", "javascript-objects"]
+  }, {
+    title: "Which equals operator (== vs ===) should be used in JavaScript comparisons?",
+    tags: ["javascript", "operators", "equality", "equality-operator", "identity-operator"]
+  }, {
+    title: "How do I return the response from an asynchronous call?",
+    tags: ["javascript", "jquery", "ajax", "asynchronous"]
+  }, {
+    title: "Why does HTML think “chucknorris” is a color?",
+    tags: ["html", "browser", "background-color"]
+  }, {
+    title: "How do I check whether a checkbox is checked in jQuery?",
+    tags: ["javascript", "jquery", "html", "checkbox"]
+  }, {
+    title: "How to horizontally center a <div>",
+    tags: ["html", "css", "alignment", "centering"]
   }
 ];
 
-tagSorter({
-  documents: documents, // Array
-  tags: ["html", "css"], // Array
-  ignoredTags: ["js"], // Array - Default: []
-  max: 3, // Number - Default: Infinity
-  sort: true // Boolean - Default: true
+// Followed tags
+var noobie = ["html", "css"];
+var fullStack = ["html", "css", "javascript", "node.js", "mongoose"];
+var jqueryFan = ["jquery"];
+
+// Ignored Tags
+var frontendHater = ["html", "css"];
+var backendHater = ["node.js", "php"];
+var jqueryHater = ["jquery"];
+
+var tag = new Tag({
+  documents: documents,
+  tags: fullStack
 });
 
-// The function tagSorter will return:
+tag.find().exec().documents // find all tags in fullStack array
 
-/*
-[
-  // { title: 'Full guide to HTML5, CSS3 and Javascript', tags: [ 'html', 'css', 'js' ]} This one is ignored 
-  { title: 'Full guide to HTML5 and CSS3', tags: [ 'html', 'css' ] },
-  { title: 'Full guide to HTML5 new tags', tags: [ 'html' ] }
-]
-*/
+tag.find().limit(1).exec().documents // limit to 1 result
+
+tag.find().sort(-1).exec().documents // Sort them by descending order or ascending order. Arguments: "descending" or "ascending" or -1 or 1
 ```
 
 ## NPM Package - Soon!
