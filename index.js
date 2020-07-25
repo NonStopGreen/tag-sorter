@@ -26,6 +26,7 @@
         this.documents = documents;
         this.tags = tags;
         this.ignoredTags = ignoredTags;
+        this.limitCount = Infinity;
       }
 
       find() {
@@ -46,10 +47,11 @@
       }
 
       limit(number = Infinity) {
-        if (isNaN(number) || number < 0) throw new TypeError("Parameter number in limit() is not a positive number");
+        if (isNaN(number) || number <= 0) throw new TypeError("Parameter number in limit() is not a positive number larger than 0");
 
-        if (this.documents.length >= number) this.documents = this.documents.slice(0, number);
-        else throw new RangeError("Parameter number in limit() is bigger than documents length");
+        if (this.documents.length < number) throw new RangeError("Parameter number in limit() is bigger than documents length");
+
+        this.limitCount = number;
 
         return this;
       }
@@ -92,7 +94,8 @@
 
         var result = {};
 
-        result.documents = this.documents;
+        // Set result objects
+        result.documents = this.documents.slice(0, this.limitCount);
 
         result.tagsCounted = allTags.reduce((prev, cur) => {
           prev[cur] = (prev[cur] || 0) + 1;
@@ -100,6 +103,9 @@
         }, {});
 
         result.uniqueTags = [...new Set(allTags)];
+
+        // Reset all values
+        this.limitCount = Infinity;
 
         return (typeof(result) === "function") ? fn([], result) : result;
       }
