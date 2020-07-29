@@ -15,41 +15,58 @@
     'use strict';
 
     class Tag {
-      constructor({ documents = [], tags = [], ignoredTags = []}) {
-        if (!Array.isArray(documents) || documents.length == 0 || !documents.every(d => (typeof d === "object")))
-          throw new TypeError('Parameter documents is not an array filled with objects');
+      constructor({ documents = []}) {
+        this.isArrayFilledWithObjects(documents);
 
-        if (!Array.isArray(tags) || tags.length == 0 || !tags.every(t => (typeof t === "string")))
-          throw new TypeError("Parameter tags is not an array filled with strings");
 
         this._documents = documents;
         this.documents = documents;
-        this.tags = tags;
-        this.ignoredTags = ignoredTags;
         this.limitCount = Infinity;
       }
 
-      find() {
+      // Is array filled with X
+      isArrayFilledWithStrings(arr) {
+        if (!Array.isArray(arr) || arr.length === 0 || arr.some(item => (typeof item !== "string")))
+          throw new TypeError("Array is not filled with strings");
+      }
+
+      isArrayFilledWithObjects(arr) {
+        if (!Array.isArray(arr) || arr.length == 0 || arr.some(item => (typeof item !== "object")))
+          throw new TypeError('Array is not filled with objects');
+      }
+
+      find(query = {}) {
         var i;
 
-        this.documents = this._documents.filter(doc => {
-          for (i = 0; i < this.ignoredTags.length; i++) {
-            if (doc.tags.includes(this.ignoredTags[i])) return;
-          }
+        var { watchedTags, ignoredTags } = query;
 
-          for (i = 0; i < this.tags.length; i++) {
-            if (doc.tags.includes(this.tags[i]))
-              return doc
-          }
+        this.watchedTags = watchedTags;
+        this.ignoredTags = ignoredTags;
+
+        if (watchedTags) this.isArrayFilledWithStrings(watchedTags);
+        if (ignoredTags) this.isArrayFilledWithStrings(ignoredTags);
+
+        this.documents = this._documents.filter(doc => {
+          if (ignoredTags)
+            for (i = 0; i < ignoredTags.length; i++) {
+              if (doc.tags.includes(ignoredTags[i])) return;
+            }
+
+          if (watchedTags)
+            for (i = 0; i < watchedTags.length; i++) {
+              if (doc.tags.includes(watchedTags[i]))
+                return doc
+            }
+
         });
+
+        if (!watchedTags && !ignoredTags) this.documents = this._documents;
 
         return this;
       }
 
       limit(number = Infinity) {
         if (isNaN(number) || number <= 0) throw new TypeError("Parameter number in limit() is not a positive number larger than 0");
-
-        if (this.documents.length < number) throw new RangeError("Parameter number in limit() is bigger than documents length");
 
         this.limitCount = number;
 
@@ -65,9 +82,9 @@
           var object2TotalTags = 0;
           var i;
 
-          for(i = 0; i < self.tags.length; i++) {
-            if (object1.tags.includes(self.tags[i])) object1TotalTags += 1;
-            if (object2.tags.includes(self.tags[i])) object2TotalTags += 1;
+          for(i = 0; i < self.watchedTags.length; i++) {
+            if (object1.tags.includes(self.watchedTags[i])) object1TotalTags += 1;
+            if (object2.tags.includes(self.watchedTags[i])) object2TotalTags += 1;
           }
 
           if (sortMethod === "descending" || sortMethod === -1) {
@@ -105,9 +122,12 @@
         result.uniqueTags = [...new Set(allTags)];
 
         // Reset all values
+        this.watchedTags = [];
+        this.ignoredTags = [];
         this.limitCount = Infinity;
+        this.documents = this._documents;
 
-        return (typeof(result) === "function") ? fn([], result) : result;
+        return (typeof(fn) === "function") ? fn(result) : result;
       }
     }
 
