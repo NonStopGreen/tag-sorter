@@ -67,15 +67,14 @@ var backendHater = ["node.js", "php"];
 var jqueryHater = ["jquery"];
 
 var tag = new Tag({
-  documents: documents,
-  tags: fullStack
+  documents: documents
 });
 
-tag.find().exec().documents // find all tags in fullStack array
+tag.find({ watchedTags: fullStack }).exec().documents // find all tags in fullStack array
 
-tag.find().limit(1).exec().documents // limit to 1 result
+tag.find({}).limit(1).exec().documents // limit to 1 result
 
-tag.find().sort(-1).exec().documents // Sort them by descending order or ascending order. Arguments: "descending" or "ascending" or -1 or 1
+tag.find({}).sort(-1).exec().documents // Sort them by descending order or ascending order. Arguments: "descending" or "ascending" or -1 or 1
 ```
 
 ## NPM Package - Soon!
